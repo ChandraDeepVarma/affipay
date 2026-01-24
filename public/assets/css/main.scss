@@ -1,0 +1,61 @@
+.auth-right{
+    h4{
+        margin:0px;
+        padding:0px;
+        color: #0036bd;
+        svg{
+            position: relative;
+            top:-3px;
+        }
+    }
+    button {
+        svg{
+            position: relative;
+            top:-5px;
+            font-size: 20px;
+        }
+    }
+}
+.bordered-table tbody tr td{
+    font-size: 13px;
+    span{
+        font-size: 13px!important;
+    }
+}
+.fz-12{
+    font-size: 12px!important;
+}
+h2.swal2-title{
+    font-size: 24px!important;
+}
+.swal2-actions{
+    .btn{
+        margin:0px 5px;
+    }
+}
+.prgmodal{
+    .modal-title{
+        font-size: 20px!important;
+    }
+    .progress{
+        height: 12px!important;
+    }
+}
+.btn-primary{
+    background-color: #004c8a!important;
+    border-color: #004c8a!important;
+}
+
+@media (min-width: 1400px) {
+    .pricing-tab{
+        margin-bottom: 30px;
+    }
+}
+@media (max-width: 1699px) {
+    .pricing-plan {
+        min-height: 600px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+}

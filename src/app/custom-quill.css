@@ -1,0 +1,35 @@
+/* Custom styles for React Quill editor */
+.ql-container {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background: #fff;
+}
+
+.ql-toolbar {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #ced4da;
+}
+
+.ql-editor {
+  min-height: 250px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.form-control.radius-8.p-0 {
+  padding: 0 !important;
+  border: none;
+  height: auto !important;
+}
+
+/* Fix for editor inside form-control */
+.form-control.radius-8.p-0 .ql-container {
+  border: 1px solid #ced4da;
+  border-top: none;
+}
+
+.form-control.radius-8.p-0 .ql-toolbar {
+  border: 1px solid #ced4da;
+}

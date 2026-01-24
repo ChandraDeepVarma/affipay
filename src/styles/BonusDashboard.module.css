@@ -1,0 +1,28 @@
+BonusDashboard.module.css
+.bonusDashboardContainer {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.dashboardLayout {
+  display: flex;
+  height: 100%;
+}
+
+.dashboardMainContent {
+  flex: 1;
+  overflow-y: auto;
+  background: #f8f9fa;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .dashboardLayout {
+    flex-direction: column;
+  }
+  
+  .dashboardMainContent {
+    height: auto;
+    padding: 15px;
+  }
+}
