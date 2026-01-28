@@ -5,7 +5,7 @@ import User from "@/models/User";
 
 export default async function handler(req, res) {
   await dbConnect();
-  const email = "admin@captcha2cash.com";
+  const email = "admin@affipay.in";
   const name = "Admin";
   const password = "12345678";
   const salt = bcrypt.genSaltSync(10);
