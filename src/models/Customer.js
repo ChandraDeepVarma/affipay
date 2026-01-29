@@ -6,7 +6,7 @@ const CustomerSlabSchema = new mongoose.Schema(
     to: { type: Number, required: true },
     reward: { type: Number, required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const CustomerReferralSchema = new mongoose.Schema(
@@ -15,7 +15,7 @@ const CustomerReferralSchema = new mongoose.Schema(
     amount: { type: Number, required: true },
     gift: { type: String },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const customerSchema = new mongoose.Schema(
@@ -35,7 +35,6 @@ const customerSchema = new mongoose.Schema(
 
     password: { type: String },
     dob: { type: Date, default: null }, // from UI
-    tshirtSize: { type: String, default: null },
     gender: { type: String, default: null },
     profileImage: {
       url: { type: String, default: null },
@@ -44,10 +43,7 @@ const customerSchema = new mongoose.Schema(
 
     // Active / Inactive from UI dropdown
     isActive: { type: Boolean, default: true },
-    walletAmount: {
-      type: Number,
-      default: 0,
-    },
+    
 
     deleted: { type: Boolean, default: false },
     deletedAt: { type: Date, default: null },
@@ -59,59 +55,12 @@ const customerSchema = new mongoose.Schema(
     accountHolderName: { type: String },
     bankName: { type: String },
 
-    // Subscription Plan details
-    planId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Plan",
-      default: null,
-    },
-    planName: { type: String, default: null },
-    planPrice: { type: Number, default: 0 },
+    
+    
 
-    earningType: {
-      type: String,
-      enum: ["limited", "unlimited"],
-      default: "limited",
-    },
-
-    captchaPerDay: { type: Number, default: 0 },
-    minimumEarningPerDay: { type: Number, default: 0 },
-
-    referralPerLogin: { type: Number, default: 0 },
-    referralCode: { type: String, unique: true, sparse: true },
-    referredBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
-      default: null,
-    },
-
-    referralRewarded: { type: Boolean, default: false },
-    referralStatus: {
-      totalReferred: { type: Number, default: 0 },
-      totalEarnings: { type: Number, default: 0 },
-      bonusAmount: { type: Number, default: 0 },
-      milestonesAchieved: { type: [String], default: [] }, // [10, 20]
-    },
-
-    slabs: { type: [CustomerSlabSchema], default: [] },
-    referrals: { type: [CustomerReferralSchema], default: [] },
-
-    subscriptionStatus: {
-      type: String,
-      enum: ["none", "active"],
-      default: "none",
-    },
-
-    razorpayPaymentId: { type: String, default: null },
-
-    lastSettledDay: { type: String, default: null },
-    lastSettledPlanId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null,
-    },
+   
     profileUpdated: { type: Boolean, default: false },
     bankDetailsUpdated: { type: Boolean, default: false },
-    referralLocked: { type: Boolean, default: false },
 
     // ---- Slab Progress Tracking ----
     currentLevel: {
@@ -127,32 +76,17 @@ const customerSchema = new mongoose.Schema(
       },
     ],
 
-    claimedGifts: [
-      {
-        planName: { type: String },
-        milestoneCount: { type: Number },
-        giftName: { type: String },
-        status: {
-          type: String,
-          enum: ["pending", "delivered"],
-          default: "pending",
-        },
-        claimedAt: { type: Date, default: Date.now },
-      },
-    ],
-    onHoldWalletAmount: { type: Number, default: 0 },
-    totalWithdrawnAmount: { type: Number, default: 0 },
     lastLoginAt: { type: Date, default: null },
     lastLoginInfo: {
       ip: { type: String, default: null },
       city: { type: String, default: null },
       device: { type: String, default: null },
-    }
+    },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 customerSchema.index({ lastLoginAt: -1 });
-customerSchema.index({ planId: 1, deleted: 1, createdAt: -1 });
+customerSchema.index({ deleted: 1, createdAt: -1 });
 customerSchema.index({ lastLoginAt: 1 });
 
 export default mongoose.models.Customer ||

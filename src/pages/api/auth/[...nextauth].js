@@ -1,98 +1,80 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
 
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
-import bcrypt from "bcryptjs";
 import LoginLog from "@/models/LoginLog";
-// changed session data
 
-export const authOptions = {
-  // ------------------- New Added Code -------------------
-   trustHost: true,
-  providers: [
-    CredentialsProvider({
-      id: "credentials",
-      name: "Credentials",
-      credentials: { email: {}, password: {} },
-      async authorize(credentials) {
-        await dbConnect();
-
-        // ✅ Allow both super_admin and staff users
-        const user = await User.findOne({
-          email: new RegExp(`^${credentials.email.trim()}$`, "i"),
-          $or: [{ isAdmin: true }, { role: { $in: ["super_admin", "staff"] } }],
-        });
-        console.log("Auth User:", user);
-        if (!user) throw new Error("Invalid email or password");
-
-        const isMatch = await bcrypt.compare(credentials.password, user.hash);
-        if (!isMatch)
-          if (!isMatch) throw new Error("Invalid email or password");
-          
-        return {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          image: user.profileImage?.url || null,
-          isAdmin: user.isAdmin || user.role === "super_admin",
-          role: user.role || (user.isAdmin ? "super_admin" : "user"),
-          permissions: user.permissions || null,
-        };
-      },
-    }),
-  ],
+export default NextAuth({
+  trustHost: true,
 
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
 
-  cookies: {
-    sessionToken: {
-      name:
-        process.env.NODE_ENV === "production"
-          ? "__Secure-next-auth.session-token"
-          : "next-auth.session-token",
-      options: {
-        httpOnly: true,
-        // sameSite: "lax",
-        // ------------------- New Added Code -------------------
-        sameSite: "none",
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: {}, // email OR phone
+        password: {},
       },
-    },
-  },
 
-  // callbacks: {
-  //   async jwt({ token, user }) {
-  //     if (user) {
-  //       token.id = user.id;
-  //       token.phone = user.phone;
-  //       // token.image = user.image;
-  //       token.isAdmin = user.isAdmin;
-  //       token.role = user.role;
-  //       token.permissions = user.permissions;
-  //     }
-  //     return token;
-  //   },
-  //   async session({ session, token }) {
-  //     if (token) {
-  //       session.user = {
-  //         ...session.user,
-  //         id: token.id,
-  //         phone: token.phone,
-  //         // image: token.image,
-  //         isAdmin: token.isAdmin,
-  //         role: token.role,
-  //         permissions: token.permissions,
-  //       };
-  //     }
-  //     return session;
-  //   },
-  // },
+      async authorize(credentials) {
+        await dbConnect();
+
+        const username = credentials.email?.trim();
+        const password = credentials.password;
+
+        if (!username || !password) {
+          throw new Error("Missing credentials");
+        }
+
+        const query = username.includes("@")
+          ? { email: new RegExp(`^${username}$`, "i") }
+          : { phone: username };
+
+        const user = await User.findOne({
+          ...query,
+          isActive: true,
+          isDeleted: { $ne: true },
+        });
+
+        if (!user) {
+          throw new Error("Invalid email/mobile or password");
+        }
+
+        const isMatch = await bcrypt.compare(password, user.hash);
+        if (!isMatch) {
+          throw new Error("Invalid email/mobile or password");
+        }
+
+        const userType = credentials.userType || "admin";
+
+        // Admin login
+        if (userType === "admin" && !user.isAdmin) {
+          throw new Error("Admin access only");
+        }
+
+        // Employee login
+        if (userType === "employee" && user.isAdmin) {
+          throw new Error("Employee access only");
+        }
+
+        return {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          role: user.role,
+          isAdmin: user.isAdmin,
+          permissions: user.permissions,
+        };
+      },
+    }),
+  ],
 
   callbacks: {
     async jwt({ token, user }) {
@@ -100,6 +82,7 @@ export const authOptions = {
         token.id = user.id;
         token.role = user.role;
         token.isAdmin = user.isAdmin;
+        token.permissions = user.permissions;
       }
       return token;
     },
@@ -108,17 +91,25 @@ export const authOptions = {
       session.user.id = token.id;
       session.user.role = token.role;
       session.user.isAdmin = token.isAdmin;
+      session.user.permissions = token.permissions;
       return session;
     },
   },
+
+  pages: {
+    signIn: "/login",
+    error: "/login",
+  },
+
+  secret: process.env.NEXTAUTH_SECRET,
 
   events: {
     async signIn({ user, account, req }) {
       try {
         await dbConnect();
+
         const ip =
-          req?.headers["x-forwarded-for"]?.split(",")[0] ||
-          req?.headers["x-real-ip"] ||
+          req?.headers?.["x-forwarded-for"]?.split(",")[0] ||
           req?.socket?.remoteAddress ||
           "Unknown";
 
@@ -130,17 +121,119 @@ export const authOptions = {
           provider: account?.provider || "credentials",
         });
       } catch (err) {
-        console.error("Failed to save login log:", err);
+        console.error("Login log error:", err);
       }
     },
   },
+});
 
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
+// import NextAuth from "next-auth";
+// import CredentialsProvider from "next-auth/providers/credentials";
+// import bcrypt from "bcryptjs";
 
-  secret: process.env.NEXTAUTH_SECRET,
-};
+// import dbConnect from "@/lib/mongoose";
+// import User from "@/models/User";
+// import LoginLog from "@/models/LoginLog";
 
-export default NextAuth(authOptions);
+// export default NextAuth({
+//   trustHost: true,
+
+//   session: {
+//     strategy: "jwt",
+//     maxAge: 30 * 24 * 60 * 60,
+//   },
+
+//   providers: [
+//     CredentialsProvider({
+//       name: "Credentials",
+//       credentials: {
+//         email: {},
+//         password: {},
+//       },
+//       async authorize(credentials) {
+//         await dbConnect();
+
+//         const email = credentials.email?.trim();
+//         const password = credentials.password;
+
+//         if (!email || !password) {
+//           throw new Error("Missing credentials");
+//         }
+
+//         const user = await User.findOne({
+//           email: new RegExp(`^${email}$`, "i"),
+//           isActive: true,
+//           isDeleted: { $ne: true },
+//         });
+
+//         if (!user) {
+//           throw new Error("Invalid email or password");
+//         }
+
+//         const isMatch = await bcrypt.compare(password, user.hash);
+//         if (!isMatch) {
+//           throw new Error("Invalid email or password");
+//         }
+
+//         return {
+//           id: user._id.toString(),
+//           name: user.name,
+//           email: user.email,
+//           role: user.role,
+//           isAdmin: user.isAdmin,
+//           permissions: user.permissions || [],
+//         };
+//       },
+//     }),
+//   ],
+
+//   callbacks: {
+//     async jwt({ token, user }) {
+//       if (user) {
+//         token.id = user.id;
+//         token.role = user.role;
+//         token.isAdmin = user.isAdmin;
+//         token.permissions = user.permissions;
+//       }
+//       return token;
+//     },
+
+//     async session({ session, token }) {
+//       session.user.id = token.id;
+//       session.user.role = token.role;
+//       session.user.isAdmin = token.isAdmin;
+//       session.user.permissions = token.permissions;
+//       return session;
+//     },
+//   },
+
+//   pages: {
+//     signIn: "/login",
+//     error: "/login",
+//   },
+
+//   secret: process.env.NEXTAUTH_SECRET,
+
+//   events: {
+//     async signIn({ user, account, req }) {
+//       try {
+//         await dbConnect();
+
+//         const ip =
+//           req.headers["x-forwarded-for"]?.split(",")[0] ||
+//           req.socket?.remoteAddress ||
+//           "Unknown";
+
+//         await LoginLog.create({
+//           userId: user.id,
+//           email: user.email,
+//           ip,
+//           date: new Date(),
+//           provider: account?.provider || "credentials",
+//         });
+//       } catch (err) {
+//         console.error("Login log error:", err);
+//       }
+//     },
+//   },
+// });

@@ -16,12 +16,18 @@ const SignInLayer = () => {
   const [apiError, setApiError] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
+  // useEffect(() => {
+  //   if (status !== "loading") return;
+  //   if (status === "authenticated" && session?.user?.isAdmin) {
+  //     router.replace("/home");
+  //   }
+  // }, [status, session, router]);
+
   useEffect(() => {
-    if (status !== "loading") return;
-    if (status === "authenticated" && session?.user?.isAdmin) {
+    if (status === "authenticated") {
       router.replace("/home");
     }
-  }, [status, session, router]);
+  }, [status, router]);
 
   const validate = () => {
     const newErrors = {};
@@ -81,7 +87,6 @@ const SignInLayer = () => {
     return <div className="text-center p-5">Checking session...</div>;
   }
   return (
-
     <section className="auth bg-base d-flex flex-wrap">
       <div className="auth-left d-lg-block d-none">
         <div className="d-flex align-items-center flex-column h-100 justify-content-center">
@@ -110,8 +115,9 @@ const SignInLayer = () => {
               <input
                 type="email"
                 name="email"
-                className={`form-control h-56-px bg-neutral-50 radius-12${errors.email ? " is-invalid" : ""
-                  }`}
+                className={`form-control h-56-px bg-neutral-50 radius-12${
+                  errors.email ? " is-invalid" : ""
+                }`}
                 value={form.email}
                 onChange={handleChange}
                 id="your-email"
@@ -130,8 +136,9 @@ const SignInLayer = () => {
                 <input
                   type={showPassword ? "text" : "password"}
                   name="password"
-                  className={`form-control h-56-px bg-neutral-50 radius-12${errors.password ? " is-invalid" : ""
-                    }`}
+                  className={`form-control h-56-px bg-neutral-50 radius-12${
+                    errors.password ? " is-invalid" : ""
+                  }`}
                   id="your-password"
                   placeholder="Password"
                   value={form.password}
@@ -144,8 +151,9 @@ const SignInLayer = () => {
                 )}
               </div>
               <span
-                className={`toggle-password ${showPassword ? "ri-eye-line" : "ri-eye-off-line"
-                  } cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
+                className={`toggle-password ${
+                  showPassword ? "ri-eye-line" : "ri-eye-off-line"
+                } cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light`}
                 onClick={() => setShowPassword((prev) => !prev)}
                 role="button"
                 tabIndex={0}
@@ -170,7 +178,6 @@ const SignInLayer = () => {
         </div>
       </div>
     </section>
-
   );
 };
 

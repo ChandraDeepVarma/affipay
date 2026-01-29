@@ -333,8 +333,8 @@
 /* === reset css start === */
 /* === reset css start === */
 *:where(
-    :not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)
-  ) {
+  :not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)
+) {
   all: unset;
   display: revert;
 }
@@ -14157,18 +14157,18 @@ td.fc-header-center {
   width: 50%;
   background-color: #eafbff;
 }
-.auth-right .form-control{
-  background-color: #fff!important;
+.auth-right .form-control {
+  background-color: #fff !important;
   border: 1px solid #6be3ff;
 }
-.auth-right .btn-primary{
-  background-color: #0036bd!important;
-  font-size: 18px!important;
+.auth-right .btn-primary {
+  background-color: #0036bd !important;
+  font-size: 18px !important;
   text-transform: uppercase;
-  border-color: #0036bd!important;
+  border-color: #0036bd !important;
 }
-.auth-right .btn-primary:hover{
-  background-color: #003098!important;
+.auth-right .btn-primary:hover {
+  background-color: #003098 !important;
 }
 @media (max-width: 991px) {
   .auth-right {

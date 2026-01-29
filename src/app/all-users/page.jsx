@@ -3,8 +3,8 @@ import UsersListLayer from "@/components/UsersListLayer";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- All Users",
-  description: "Cash2Captcha- All Users",
+  title: "affipay- All Employees",
+  description: "affipay- All Employees",
 };
 
 const Page = () => {
@@ -13,7 +13,7 @@ const Page = () => {
       {/* MasterLayout */}
       <MasterLayout>
         {/* Breadcrumb */}
-        <Breadcrumb title="All Users" />
+        <Breadcrumb title="All Employees" />
 
         {/* UsersListLayer */}
         <UsersListLayer />

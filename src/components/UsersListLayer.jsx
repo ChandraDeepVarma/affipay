@@ -21,7 +21,6 @@ const timeAgo = (date) => {
   return new Date(date).toLocaleString("en-GB");
 };
 
-
 const UsersListLayer = () => {
   const router = useRouter();
 
@@ -42,8 +41,6 @@ const UsersListLayer = () => {
   const [planFilter, setPlanFilter] = useState("");
   const [plans, setPlans] = useState([]);
 
-
-
   // =============================
   // Fetch users (server pagination)
   // =============================
@@ -61,11 +58,15 @@ const UsersListLayer = () => {
         planFilter,
       });
 
-      const res = await fetch(`/api/customers/getuser?${params}`);
+      // const res = await fetch(`/api/customers/getuser?${params}`);
+      const res = await fetch(`/api/admin/users/list`);
+
       const out = await res.json();
 
       if (res.ok) {
-        setUsers(out.users || []);
+        // setUsers(out.users || []);
+        setUsers(out.data || []);
+
         setPlans(out.distinctPlanNames || []);
         setTotalPages(out.pagination?.totalPages || 1);
       }
@@ -79,7 +80,15 @@ const UsersListLayer = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, search, fromDate, toDate, pageSize, loginFilter, planFilter]);
+  }, [
+    currentPage,
+    search,
+    fromDate,
+    toDate,
+    pageSize,
+    loginFilter,
+    planFilter,
+  ]);
 
   // =============================
   // Utils
@@ -148,8 +157,8 @@ const UsersListLayer = () => {
     if (res.ok) {
       setUsers((prev) =>
         prev.map((x) =>
-          x._id === u._id ? { ...x, isActive: out.isActive } : x
-        )
+          x._id === u._id ? { ...x, isActive: out.isActive } : x,
+        ),
       );
       Swal.fire("Success", out.message, "success");
     }
@@ -264,7 +273,7 @@ const UsersListLayer = () => {
           <option value="never">Never logged in</option>
         </Form.Select>
 
-        <Form.Select
+        {/* <Form.Select
           style={{ width: "220px" }}
           value={planFilter}
           onChange={(e) => {
@@ -284,8 +293,7 @@ const UsersListLayer = () => {
               ))}
             </optgroup>
           )}
-        </Form.Select>
-
+        </Form.Select> */}
       </div>
 
       {/* Table */}
@@ -301,13 +309,13 @@ const UsersListLayer = () => {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
-                  <th>DOB</th>
-                  <th>Wallet</th>
-                  <th>Plan</th>
-                  <th>Purchased Date</th>
+                  <th>Blood Group</th>
+                  <th>Emergency Contact</th>
+                  <th>Joining Date</th>
+                  <th>Remarks</th>
                   <th>Status</th>
-                  <th>Modified At</th>
-                  <th>Last Login</th>
+                  <th>Created At</th>
+                  <th>Updated At</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -315,59 +323,62 @@ const UsersListLayer = () => {
               <tbody>
                 {users.map((u, i) => (
                   <tr key={u._id}>
-                    <td>
-                      {(currentPage - 1) * pageSize + i + 1}
-                    </td>
-                    <td>{u.fullName}</td>
-                    <td>{u.email}</td>
-                    <td>
-                      {u.phone}{" "}
-                      {u.phoneVerified ? (
-                        <RiVerifiedBadgeFill className="text-success" />
-                      ) : (
-                        <AiOutlineExclamation className="text-danger" />
-                      )}
-                    </td>
-                    <td>{formatDOB(u.dob)}</td>
-                    <td>{u.walletAmount?.toFixed(2) || "0.00"}</td>
-                    <td>{u.planName || "N/A"}</td>
+                    <td>{i + 1}</td>
+
+                    <td>{u.name || "—"}</td>
+
+                    <td>{u.email || "—"}</td>
+
+                    <td>{u.phone || "—"}</td>
+
+                    <td>{u.bloodGroup || "—"}</td>
 
                     <td>
-                      {u.createdAt
-                        ? new Date(u.createdAt).toLocaleDateString("en-GB")
-                        : "N/A"}
+                      {u.emergencyContact?.name
+                        ? `${u.emergencyContact.name} (${u.emergencyContact.phone || "—"})`
+                        : "—"}
                     </td>
+
+                    <td>
+                      {u.joiningDate
+                        ? new Date(u.joiningDate).toLocaleDateString("en-GB")
+                        : "—"}
+                    </td>
+
+                    <td
+                      style={{
+                        maxWidth: "200px",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                      title={u.remarks}
+                    >
+                      {u.remarks || "—"}
+                    </td>
+
                     <td>
                       <span
-                        className={`badge ${u.isActive ? "bg-success" : "bg-danger"
-                          }`}
-                        style={{ cursor: "pointer" }}
-                        onClick={() => toggleStatus(u)}
+                        className={`badge ${u.isActive ? "bg-success" : "bg-danger"}`}
                       >
                         {u.isActive ? "Active" : "Inactive"}
                       </span>
                     </td>
 
                     <td>
+                      {u.createdAt
+                        ? new Date(u.createdAt).toLocaleString("en-GB")
+                        : "—"}
+                    </td>
+
+                    <td>
                       {u.updatedAt
                         ? new Date(u.updatedAt).toLocaleString("en-GB")
-                        : "N/A"}
+                        : "—"}
                     </td>
 
                     <td>
-                      {u.lastLoginAt ? (
-                        <div style={{ fontSize: "12px", textAlign: "left" }}>
-                          <div><b>{timeAgo(u.lastLoginAt)}</b></div>
-                          <div>{new Date(u.lastLoginAt).toLocaleString("en-GB")}</div>
-                          <div>{u.lastLoginInfo?.city || "N/A"}</div>
-                        </div>
-                      ) : (
-                        "Never"
-                      )}
-                    </td>
-
-                    <td>
-                      <div className="d-flex justify-content-center gap-2">
+                      <div className="d-flex gap-2 justify-content-center">
                         <button
                           className="btn btn-sm btn-info"
                           onClick={() => handleOpenModal(u)}
@@ -383,13 +394,6 @@ const UsersListLayer = () => {
                         >
                           <Icon icon="lucide:edit" />
                         </button>
-
-                        {/* <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleDelete(u)}
-                        >
-                          <Icon icon="fluent:delete-24-regular" />
-                        </button> */}
                       </div>
                     </td>
                   </tr>
@@ -397,7 +401,9 @@ const UsersListLayer = () => {
 
                 {!users.length && (
                   <tr>
-                    <td colSpan={10}>No users found</td>
+                    <td colSpan={12} className="text-center">
+                      No employees found
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -443,44 +449,62 @@ const UsersListLayer = () => {
       </div>
 
       {/* Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg" centered>
+      <Modal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        size="lg"
+        centered
+      >
         <Modal.Header closeButton>
-          <Modal.Title>Customer Full Profile</Modal.Title>
+          <Modal.Title>Employee Full Profile</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedUser && (
             <div className="container-fluid">
-              {/* PROFILE SECTION */}
+              {/* BASIC INFO */}
               <div className="row mb-3 align-items-center">
                 <div className="col-md-3 text-center">
+                  {/* <div
+                    className="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
+                    style={{ width: 120, height: 120, fontSize: 40 }}
+                  >
+                    {selectedUser.name?.charAt(0) || "?"}
+                  </div> */}
                   {selectedUser.profileImage?.url ? (
                     <img
                       src={selectedUser.profileImage.url}
-                      className="img-thumbnail rounded-circle"
-                      style={{ width: 120, height: 120, objectFit: "cover" }}
+                      alt={selectedUser.name}
+                      style={{
+                        width: 120,
+                        height: 120,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
                     />
                   ) : (
                     <div
                       className="rounded-circle bg-secondary d-flex align-items-center justify-content-center text-white"
                       style={{ width: 120, height: 120, fontSize: 40 }}
                     >
-                      {selectedUser.fullName?.charAt(0)}
+                      {selectedUser.name?.charAt(0) || "?"}
                     </div>
                   )}
                 </div>
 
                 <div className="col-md-9">
-                  <h5>{selectedUser.fullName}</h5>
-                  <p className="mb-1"><b>Email:</b> {selectedUser.email}</p>
+                  <h5>{selectedUser.name || "—"}</h5>
                   <p className="mb-1">
-                    <b>Phone:</b> {selectedUser.phone}{" "}
-                    {selectedUser.phoneVerified ? (
-                      <RiVerifiedBadgeFill className="text-success" />
-                    ) : (
-                      <AiOutlineExclamation className="text-danger" />
-                    )}
+                    <b>Email:</b> {selectedUser.email || "—"}
                   </p>
-                  <span className={`badge ${selectedUser.isActive ? "bg-success" : "bg-danger"}`}>
+                  <p className="mb-1">
+                    <b>Phone:</b> {selectedUser.phone || "—"}
+                  </p>
+
+                  <span
+                    className={`badge ${
+                      selectedUser.isActive ? "bg-success" : "bg-danger"
+                    }`}
+                  >
                     {selectedUser.isActive ? "Active" : "Inactive"}
                   </span>
                 </div>
@@ -491,9 +515,23 @@ const UsersListLayer = () => {
               {/* PERSONAL DETAILS */}
               <h6 className="text-primary">Personal Details</h6>
               <div className="row mb-3">
-                <div className="col-md-4"><b>Gender:</b> {selectedUser.gender || "N/A"}</div>
-                <div className="col-md-4"><b>DOB:</b> {formatDOB(selectedUser.dob)}</div>
-                <div className="col-md-4"><b>T-Shirt Size:</b> {selectedUser.tshirtSize || "N/A"}</div>
+                <div className="col-md-4">
+                  <b>Date of Birth:</b>{" "}
+                  {selectedUser.dob
+                    ? new Date(selectedUser.dob).toLocaleDateString("en-GB")
+                    : "—"}
+                </div>
+
+                <div className="col-md-4">
+                  <b>Gender:</b>{" "}
+                  {selectedUser.gender
+                    ? selectedUser.gender.replace(/_/g, " ")
+                    : "—"}
+                </div>
+
+                <div className="col-md-4">
+                  <b>Verified:</b> {selectedUser.isVerified ? "Yes" : "No"}
+                </div>
               </div>
 
               {/* ADDRESS DETAILS */}
@@ -501,100 +539,79 @@ const UsersListLayer = () => {
               <div className="row mb-3">
                 <div className="col-md-12">
                   <b>Address:</b>{" "}
-                  {`${selectedUser.addressLine1 || ""} ${selectedUser.addressLine2 || ""}`.trim() || "N/A"}
+                  {[selectedUser.addressLine1, selectedUser.addressLine2]
+                    .filter(Boolean)
+                    .join(", ") || "—"}
                 </div>
-                <div className="col-md-4"><b>City:</b> {selectedUser.city || "N/A"}</div>
-                <div className="col-md-4"><b>Pin Code:</b> {selectedUser.pinCode || "N/A"}</div>
+
+                <div className="col-md-6">
+                  <b>City:</b> {selectedUser.city || "—"}
+                </div>
+
+                <div className="col-md-6">
+                  <b>Pin Code:</b> {selectedUser.pinCode || "—"}
+                </div>
               </div>
 
-              {/* BANK DETAILS */}
-              <h6 className="text-primary">Bank / UPI Details</h6>
+              {/* EMPLOYEE DETAILS */}
+              <h6 className="text-primary">Employee Details</h6>
               <div className="row mb-3">
-                <div className="col-md-4"><b>UPI ID:</b> {selectedUser.upiId || "N/A"}</div>
-                <div className="col-md-4"><b>Account No:</b> {selectedUser.bankAccount || "N/A"}</div>
-                <div className="col-md-4"><b>IFSC:</b> {selectedUser.ifscCode || "N/A"}</div>
-                <div className="col-md-4"><b>Account Holder:</b> {selectedUser.accountHolderName || "N/A"}</div>
-              </div>
-
-              {/* SUBSCRIPTION DETAILS */}
-              <h6 className="text-primary">Subscription Details</h6>
-              <div className="row mb-3">
-                <div className="col-md-4"><b>Plan:</b> {selectedUser.planName || "N/A"}</div>
                 <div className="col-md-4">
-                  <b>Purchased Date:</b>{" "}
-                  {selectedUser.createdAt
-                    ? new Date(selectedUser.createdAt).toLocaleDateString("en-GB")
-                    : "N/A"}
+                  <b>Blood Group:</b> {selectedUser.bloodGroup || "—"}
                 </div>
-                <div className="col-md-4"><b>Price:</b> ₹{selectedUser.planPrice || 0}</div>
-                <div className="col-md-4"><b>Status:</b> {selectedUser.subscriptionStatus || "N/A"}</div>
-                <div className="col-md-4"><b>Earning Type:</b> {selectedUser.earningType || "N/A"}</div>
+
+                <div className="col-md-4">
+                  <b>Joining Date:</b>{" "}
+                  {selectedUser.joiningDate
+                    ? new Date(selectedUser.joiningDate).toLocaleDateString(
+                        "en-GB",
+                      )
+                    : "—"}
+                </div>
+
+                <div className="col-md-4">
+                  <b>Role:</b> {selectedUser.role || "employee"}
+                </div>
               </div>
 
-              {/* WALLET & REFERRAL */}
-              <h6 className="text-primary">Wallet & Referral</h6>
+              {/* EMERGENCY CONTACT */}
+              <h6 className="text-primary">Emergency Contact</h6>
               <div className="row mb-3">
-                <div className="col-md-4"><b>Wallet:</b> ₹{selectedUser.walletAmount || 0}</div>
-                <div className="col-md-4"><b>On Hold:</b> ₹{selectedUser.onHoldWalletAmount || 0}</div>
-                <div className="col-md-4"><b>Total Withdrawn:</b> ₹{selectedUser.totalWithdrawnAmount || 0}</div>
-                <div className="col-md-4"><b>Referral Code:</b> {selectedUser.referralCode || "N/A"}</div>
-                <div className="col-md-4"><b>Referral Locked:</b> {selectedUser.referralLocked ? "Yes" : "No"}</div>
-                <div className="col-md-4"><b>Current Level:</b> {selectedUser.currentLevel || 0}</div>
+                <div className="col-md-6">
+                  <b>Name:</b> {selectedUser.emergencyContact?.name || "—"}
+                </div>
+                <div className="col-md-6">
+                  <b>Phone:</b> {selectedUser.emergencyContact?.phone || "—"}
+                </div>
               </div>
+
+              {/* REMARKS */}
+              {selectedUser.remarks && (
+                <>
+                  <h6 className="text-primary">Remarks</h6>
+                  <div className="row mb-3">
+                    <div className="col-md-12">{selectedUser.remarks}</div>
+                  </div>
+                </>
+              )}
+
+              <hr />
 
               {/* SYSTEM INFO */}
               <h6 className="text-primary">System Info</h6>
-
-              <div className="row mb-3">
-                <div className="col-md-12">
-                  <h6 className="text-secondary">Last Login Details</h6>
-
-                  {selectedUser.lastLoginAt ? (
-                    <div className="border rounded p-2 bg-light">
-                      <p className="mb-1">
-                        <b>Time:</b>{" "}
-                        {new Date(selectedUser.lastLoginAt).toLocaleString("en-GB")}
-                      </p>
-
-                      <p className="mb-1">
-                        <b>City:</b>{" "}
-                        {selectedUser.lastLoginInfo?.city || "N/A"}
-                      </p>
-
-                      <p className="mb-1">
-                        <b>IP Address:</b>{" "}
-                        {selectedUser.lastLoginInfo?.ip || "N/A"}
-                      </p>
-
-                      <p className="mb-1">
-                        <b>Device:</b>{" "}
-                        {selectedUser.lastLoginInfo?.device || "N/A"}
-                      </p>
-                    </div>
-                  ) : (
-                    <p>No login history available</p>
-                  )}
-                </div>
-              </div>
-
               <div className="row mb-2">
                 <div className="col-md-6">
                   <b>Created At:</b>{" "}
-                  {selectedUser.createdAt
-                    ? new Date(selectedUser.createdAt).toLocaleString("en-GB")
-                    : "N/A"}
+                  {new Date(selectedUser.createdAt).toLocaleString("en-GB")}
                 </div>
                 <div className="col-md-6">
                   <b>Updated At:</b>{" "}
-                  {selectedUser.updatedAt
-                    ? new Date(selectedUser.updatedAt).toLocaleString("en-GB")
-                    : "N/A"}
+                  {new Date(selectedUser.updatedAt).toLocaleString("en-GB")}
                 </div>
               </div>
             </div>
           )}
         </Modal.Body>
-
       </Modal>
     </div>
   );

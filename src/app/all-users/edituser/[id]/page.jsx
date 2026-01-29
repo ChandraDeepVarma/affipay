@@ -7,47 +7,46 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Form, Button } from "react-bootstrap";
 import Swal from "sweetalert2";
-import { IoShirtOutline } from "react-icons/io5";
-import { BsGenderAmbiguous } from "react-icons/bs";
 
 const EditUserPage = ({ params }) => {
-  const { id } = React.use(params);
+  const resolvedParams = React.use(params);
+  const id = resolvedParams.id;
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
 
+  // 🔑 EXACT SAME STRUCTURE AS ADD USER
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
-    phoneVerified: false,
-    pinCode: "",
+    password: "",
+    confirmPassword: "",
+
+    dob: "",
+    gender: "",
     addressLine1: "",
     addressLine2: "",
     city: "",
-    dob: "",
-    gender: "",
-    tshirtSize: "",
+    pinCode: "",
+
+    bloodGroup: "",
+    emergencyContactName: "",
+    emergencyContactPhone: "",
+    joiningDate: "",
+    remarks: "",
+
+    isVerified: false,
     isActive: true,
-
-    // Bank Information
-    upiId: "",
-    bankAccount: "",
-    ifscCode: "",
-    accountHolderName: "",
-
-    // Referral Info
-    referralCode: "",
-    referralName: "",
 
     profileImage: { url: "", name: "" },
   });
 
-  // Fetch User Data
+  // ---------------- FETCH USER ----------------
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`/api/customers/getuser/${id}`);
+        const res = await fetch(`/api/admin/users/update/${id}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -58,32 +57,33 @@ const EditUserPage = ({ params }) => {
         const u = data.user;
 
         setFormData({
-          fullName: u.fullName || "",
+          fullName: u.name || "",
           email: u.email || "",
           phone: u.phone || "",
-          phoneVerified: u.phoneVerified || false,
-          pinCode: u.pinCode || "",
+          password: "",
+          confirmPassword: "",
+
+          dob: u.dob ? u.dob.split("T")[0] : "",
+          gender: u.gender || "",
           addressLine1: u.addressLine1 || "",
           addressLine2: u.addressLine2 || "",
           city: u.city || "",
-          dob: u.dob ? u.dob.split("T")[0] : "",
-          gender: u.gender || "",
-          tshirtSize: u.tshirtSize || "",
+          pinCode: u.pinCode || "",
+
+          bloodGroup: u.bloodGroup || "",
+          emergencyContactName: u.emergencyContact?.name || "",
+          emergencyContactPhone: u.emergencyContact?.phone || "",
+          joiningDate: u.joiningDate ? u.joiningDate.split("T")[0] : "",
+          remarks: u.remarks || "",
+
+          isVerified: u.isVerified,
           isActive: u.isActive,
-
-          upiId: u.upiId || "",
-          bankAccount: u.bankAccount || "",
-          ifscCode: u.ifscCode || "",
-          accountHolderName: u.accountHolderName || "",
-
-          referralCode: u.referralCode || "",
-          referralName: u.referralName?.fullName || "",
 
           profileImage: u.profileImage || { url: "", name: "" },
         });
 
         setLoading(false);
-      } catch (err) {
+      } catch {
         Swal.fire("Error", "Failed to load user details", "error");
         router.push("/all-users");
       }
@@ -92,159 +92,161 @@ const EditUserPage = ({ params }) => {
     fetchUser();
   }, [id, router]);
 
+  // ---------------- IMAGE ----------------
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({
-          ...formData,
-          profileImage: {
-            url: reader.result,
-            name: file.name,
-          },
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setFormData((prev) => ({
+        ...prev,
+        profileImage: { url: reader.result, name: file.name },
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
-  // Handle Form Change
+  // ---------------- CHANGE ----------------
   const handleChange = (e) => {
     const { name, value } = e.target;
-    // Strict numeric validation for phone and pinCode as per previous instruction for consistency
-    if (name === "phone" || name === "pinCode") {
+
+    if (name === "phone" || name === "emergencyContactPhone") {
       if (!/^\d*$/.test(value)) return;
-      if (name === "phone" && value.length > 10) return;
-      if (name === "pinCode" && value.length > 6) return;
+      if (value.length > 10) return;
     }
+
     setFormData({ ...formData, [name]: value });
   };
 
-  // Update User
+  // -------------------PASSWORD OPTIONAL LOGIC-----------------
+  const canSubmit =
+    formData.fullName &&
+    formData.email &&
+    formData.phone.length === 10 &&
+    (!formData.password || formData.password === formData.confirmPassword);
+
+  // ---------------- SUBMIT ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (formData.password && formData.password !== formData.confirmPassword) {
+      return Swal.fire("Error", "Passwords do not match", "error");
+    }
+
+    const payload = {
+      name: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+
+      dob: formData.dob,
+      gender: formData.gender,
+      addressLine1: formData.addressLine1,
+      addressLine2: formData.addressLine2,
+      city: formData.city,
+      pinCode: formData.pinCode,
+
+      bloodGroup: formData.bloodGroup,
+      emergencyContactName: formData.emergencyContactName,
+      emergencyContactPhone: formData.emergencyContactPhone,
+      joiningDate: formData.joiningDate,
+      remarks: formData.remarks,
+
+      isVerified: formData.isVerified,
+      isActive: formData.isActive,
+      profileImage: formData.profileImage,
+    };
+
+    if (formData.password) {
+      payload.password = formData.password;
+    }
+
     try {
-      const res = await fetch(`/api/customers/updateuser/${id}`, {
-        method: "PATCH",
+      const res = await fetch(`/api/admin/users/update/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
-      const out = await res.json();
+      const data = await res.json();
 
       if (!res.ok) {
-        Swal.fire("Error", out.error || "Failed to update user", "error");
-        return;
+        return Swal.fire("Error", data.error || "Update failed", "error");
       }
 
       Swal.fire({
         icon: "success",
-        title: "User Updated",
+        title: "Employee Updated",
         timer: 1800,
         showConfirmButton: false,
       });
 
       router.push("/all-users");
-    } catch (err) {
+    } catch {
       Swal.fire("Error", "Unexpected error occurred", "error");
     }
   };
 
+  // ---------------- LOADING ----------------
   if (loading) {
     return (
       <MasterLayout>
-        <div className="p-5 text-center">
-          <p>Loading User...</p>
-        </div>
+        <div className="p-5 text-center">Loading User...</div>
       </MasterLayout>
     );
   }
 
+  // ---------------- UI (IDENTICAL TO ADD) ----------------
   return (
     <MasterLayout>
-      <Breadcrumb title="Edit User" />
+      <Breadcrumb title="Edit Employee" />
 
       <div className="card h-100 p-0 radius-12 overflow-hidden">
         <div className="card-body p-40">
           <Form onSubmit={handleSubmit}>
-            {/* Section 1: Profile Information */}
-            <h4 className="mb-3">Profile Information</h4>
-            {/* <div className="row mb-4">
-              <div className="col-sm-12 text-center">
-                <div
-                  className="position-relative d-inline-block"
-                  style={{ width: "120px", height: "120px" }}
-                >
-                  <img
-                    src={
-                      formData.profileImage?.url ||
-                      "https://via.placeholder.com/120?text=User"
-                    }
-                    alt="Profile"
-                    className="rounded-circle object-fit-cover w-100 h-100 border"
-                  />
-                  <div className="position-absolute bottom-0 end-0">
-                    <label
-                      htmlFor="profileUpload"
-                      className="btn btn-sm btn-primary rounded-circle p-2"
-                      style={{ cursor: "pointer" }}
-                    >
-                      <i className="bi bi-camera-fill"></i>+
-                      <input
-                        type="file"
-                        id="profileUpload"
-                        accept="image/*"
-                        className="d-none"
-                        onChange={handleImageChange}
-                      />
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-            <div className="row">
+            <h4 className="mb-4">Profile Information</h4>
+
+            {/* Row 1 */}
+            <div className="row g-4">
               <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Full Name</Form.Label>
+                <Form.Group>
+                  <Form.Label>Full Name *</Form.Label>
                   <Form.Control
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
                     required
-                    placeholder="Full Name"
                   />
                 </Form.Group>
               </div>
 
               <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
+                <Form.Group>
+                  <Form.Label>Email *</Form.Label>
                   <Form.Control
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    placeholder="Email"
                   />
                 </Form.Group>
               </div>
+            </div>
 
+            {/* Row 2 */}
+            <div className="row g-4 mt-1">
               <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Phone</Form.Label>
+                <Form.Group>
+                  <Form.Label>Phone *</Form.Label>
                   <Form.Control
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     required
-                    placeholder="Phone Number"
                   />
                 </Form.Group>
               </div>
-              {/* Profile Images */}
               <div className="col-sm-6">
                 <Form.Group className="mb-3">
                   <Form.Label>Profile Photo</Form.Label>
@@ -252,70 +254,94 @@ const EditUserPage = ({ params }) => {
                     <Form.Control
                       type="file"
                       name="profileImage"
+                      accept="image/*"
                       onChange={handleImageChange}
-                      placeholder="Profile Photo"
                     />
-                    <img
-                      src={
-                        formData.profileImage?.url ||
-                        "https://placehold.co/10x10/png"
-                      }
-                      alt="Profile"
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                        marginTop: "10px",
-                      }}
-                      className="mt-0"
-                    />
-                    <div className="position-absolute bottom-0 end-0">
-                      <label
-                        htmlFor="profileUpload"
-                        className="btn btn-sm btn-primary rounded-circle p-2"
-                        style={{ cursor: "pointer" }}
-                      >
-                        <i className="bi bi-camera-fill"></i>+{" "}
-                        <input
-                          type="file"
-                          id="profileUpload"
-                          accept="image/*"
-                          className="d-none"
-                          onChange={handleImageChange}
-                        />
-                      </label>
-                    </div>
+                    {formData.profileImage?.url && (
+                      <img
+                        src={formData.profileImage.url}
+                        alt="Profile"
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          borderRadius: "50%",
+                        }}
+                      />
+                    )}
                   </div>
                 </Form.Group>
               </div>
 
               <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>PIN Code</Form.Label>
+                <Form.Group>
+                  <Form.Label>Password *</Form.Label>
                   <Form.Control
-                    name="pinCode"
-                    value={formData.pinCode}
+                    type="password"
+                    name="password"
+                    value={formData.password}
                     onChange={handleChange}
-                    placeholder="PIN Code"
                   />
                 </Form.Group>
               </div>
+            </div>
 
-              <div className="col-sm-12">
-                <Form.Group className="mb-3">
-                  <Form.Label>Address</Form.Label>
+            {/* Row 3 */}
+            <div className="row g-4 mt-1">
+              <div className="col-sm-6">
+                <Form.Group>
+                  <Form.Label>Confirm Password *</Form.Label>
                   <Form.Control
-                    name="address"
-                    value={formData.address}
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
                     onChange={handleChange}
-                    placeholder="Address"
                   />
                 </Form.Group>
               </div>
 
               <div className="col-sm-6">
-                <Form.Group className="mb-3">
+                <Form.Group>
+                  <Form.Label>Blood Group</Form.Label>
+                  <Form.Select
+                    name="bloodGroup"
+                    value={formData.bloodGroup}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select</option>
+                    <option>A+</option>
+                    <option>A-</option>
+                    <option>B+</option>
+                    <option>B-</option>
+                    <option>AB+</option>
+                    <option>AB-</option>
+                    <option>O+</option>
+                    <option>O-</option>
+                  </Form.Select>
+                </Form.Group>
+              </div>
+              <div className="col-sm-6">
+                <Form.Group>
+                  <Form.Label>Gender</Form.Label>
+                  <Form.Select
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                    <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
+                  </Form.Select>
+                </Form.Group>
+              </div>
+            </div>
+
+            {/* Row 4 */}
+            <div className="row g-4 mt-1">
+              <div className="col-sm-6">
+                <Form.Group>
                   <Form.Label>Date of Birth</Form.Label>
                   <Form.Control
                     type="date"
@@ -327,24 +353,120 @@ const EditUserPage = ({ params }) => {
               </div>
 
               <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>City</Form.Label>
+                <Form.Group>
+                  <Form.Label>Joining Date</Form.Label>
                   <Form.Control
-                    name="city"
-                    value={formData.city}
+                    type="date"
+                    name="joiningDate"
+                    value={formData.joiningDate}
                     onChange={handleChange}
-                    required
-                    placeholder="City"
+                  />
+                </Form.Group>
+              </div>
+            </div>
+
+            <Form.Group className="mt-20">
+              <Form.Label>Address Line 1</Form.Label>
+              <Form.Control
+                name="addressLine1"
+                value={formData.addressLine1}
+                onChange={handleChange}
+              />
+            </Form.Group>
+            <Form.Group className="mt-20">
+              <Form.Label>Address Line 2</Form.Label>
+              <Form.Control
+                name="addressLine2"
+                value={formData.addressLine2}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                name="city"
+                value={formData.city}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            <Form.Group>
+              <Form.Label>Pin Code</Form.Label>
+              <Form.Control
+                name="pinCode"
+                value={formData.pinCode}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            {/* Row 5 */}
+            <div className="row g-4 mt-1">
+              <div className="col-sm-6">
+                <Form.Group>
+                  <Form.Label>Emergency Contact Name</Form.Label>
+                  <Form.Control
+                    name="emergencyContactName"
+                    value={formData.emergencyContactName}
+                    onChange={handleChange}
                   />
                 </Form.Group>
               </div>
 
-              {/* Account Status */}
               <div className="col-sm-6">
                 <Form.Group>
-                  <Form.Label>Account Status</Form.Label>
+                  <Form.Label>Emergency Contact Number</Form.Label>
+                  <Form.Control
+                    name="emergencyContactPhone"
+                    value={formData.emergencyContactPhone}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </div>
+            </div>
+
+            {/* Row 6 */}
+            <div className="row g-4 mt-1">
+              <div className="col-sm-12">
+                <Form.Group>
+                  <Form.Label>Remarks</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    rows={3}
+                    name="remarks"
+                    value={formData.remarks}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+              </div>
+            </div>
+
+            <div className="row g-4 mt-1">
+              <div className="col-sm-6">
+                <Form.Group>
+                  <Form.Label>Verified</Form.Label>
                   <Form.Select
-                    name="isActive"
+                    value={formData.isVerified ? "Yes" : "No"}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        isVerified: e.target.value === "Yes",
+                      })
+                    }
+                  >
+                    <option>No</option>
+                    <option>Yes</option>
+                  </Form.Select>
+                </Form.Group>
+              </div>
+            </div>
+
+            {/* Status */}
+            <div className="row g-4 mt-1">
+              <div className="col-sm-6">
+                <Form.Group>
+                  <Form.Label>Status</Form.Label>
+                  <Form.Select
                     value={formData.isActive ? "Active" : "Inactive"}
                     onChange={(e) =>
                       setFormData({
@@ -353,165 +475,13 @@ const EditUserPage = ({ params }) => {
                       })
                     }
                   >
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
                   </Form.Select>
                 </Form.Group>
               </div>
-
-              {/* phone Status */}
-              <div className="col-sm-6">
-                <Form.Group>
-                  <Form.Label>Phone Status</Form.Label>
-                  <Form.Select
-                    name="phoneVerified"
-                    value={formData.phoneVerified ? "true" : "false"}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        phoneVerified: e.target.value === "true",
-                      })
-                    }
-                  >
-                    <option value="true">Verified</option>
-                    <option value="false">Not Verified</option>
-                  </Form.Select>
-                </Form.Group>
-              </div>
-              {/* Referral Info */}
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Referral Code</Form.Label>
-                  <Form.Control
-                    name="referralCode"
-                    value={formData.referralCode}
-                    onChange={handleChange}
-                    placeholder="Referral Code"
-                  />
-                </Form.Group>
-              </div>
-
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Referral Name</Form.Label>
-                  <Form.Control
-                    name="referralName"
-                    value={formData.referralName}
-                    onChange={handleChange}
-                    placeholder="Referral Name"
-                  />
-                </Form.Group>
-              </div>
             </div>
 
-            {/* Section: Gender & T-Shirt Size */}
-            <div className="row">
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>
-                    T-Shirt Size{" "}
-                    <span className="text-danger fw-bold fs-6">*</span>
-                  </Form.Label>
-                  <div className="input-group">
-                    <Form.Select
-                      name="tshirtSize"
-                      value={formData.tshirtSize}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Size</option>
-                      <option value="XS">XS</option>
-                      <option value="S">S</option>
-                      <option value="M">M</option>
-                      <option value="L">L</option>
-                      <option value="XL">XL</option>
-                      <option value="XXL">XXL</option>
-                      <option value="XXXL">XXXL</option>
-                    </Form.Select>
-                    <span className="input-group-text">
-                      <IoShirtOutline />
-                    </span>
-                  </div>
-                </Form.Group>
-              </div>
-
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Gender</Form.Label>
-                  <div className="input-group">
-                    <Form.Select
-                      name="gender"
-                      value={formData.gender}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Gender</option>
-                      <option value="MALE">Male</option>
-                      <option value="FEMALE">Female</option>
-                      <option value="OTHER">Other</option>
-                      <option value="PREFER_NOT_TO_SAY">
-                        Prefer not to say
-                      </option>
-                    </Form.Select>
-                    <span className="input-group-text">
-                      <BsGenderAmbiguous />
-                    </span>
-                  </div>
-                </Form.Group>
-              </div>
-            </div>
-
-            {/* Section 3: Bank Details */}
-            <h4 className="mt-4 mb-3">Bank & Payment Details (Optional)</h4>
-            <div className="row">
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>UPI ID</Form.Label>
-                  <Form.Control
-                    name="upiId"
-                    value={formData.upiId}
-                    onChange={handleChange}
-                    placeholder="example@upi"
-                  />
-                </Form.Group>
-              </div>
-
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Bank Account Number</Form.Label>
-                  <Form.Control
-                    name="bankAccount"
-                    value={formData.bankAccount}
-                    onChange={handleChange}
-                    placeholder="Bank Account Number"
-                  />
-                </Form.Group>
-              </div>
-
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>IFSC Code</Form.Label>
-                  <Form.Control
-                    name="ifscCode"
-                    value={formData.ifscCode}
-                    onChange={handleChange}
-                    placeholder="IFSC"
-                  />
-                </Form.Group>
-              </div>
-
-              <div className="col-sm-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Account Holder Name</Form.Label>
-                  <Form.Control
-                    name="accountHolderName"
-                    value={formData.accountHolderName}
-                    onChange={handleChange}
-                    placeholder="Account Holder Name"
-                  />
-                </Form.Group>
-              </div>
-            </div>
-
-            {/* Submit Button */}
             <div className="d-flex justify-content-center gap-3 mt-5">
               <button
                 className="btn btn-danger-700 px-5 py-3"
@@ -522,8 +492,13 @@ const EditUserPage = ({ params }) => {
               >
                 Cancel
               </button>
-              <Button className="btn btn-primary px-5 py-3" type="submit">
-                Update User
+
+              <Button
+                type="submit"
+                className="btn btn-primary px-5 py-3 radius-8"
+                disabled={!canSubmit}
+              >
+                Update Employee
               </Button>
             </div>
           </Form>

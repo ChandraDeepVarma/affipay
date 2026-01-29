@@ -68,7 +68,7 @@ const MasterLayout = ({ children }) => {
 
     // Attach click event listeners to all dropdown triggers
     const dropdownTriggers = document.querySelectorAll(
-      ".sidebar-menu .dropdown > a, .sidebar-menu .dropdown > Link"
+      ".sidebar-menu .dropdown > a, .sidebar-menu .dropdown > Link",
     );
 
     dropdownTriggers.forEach((trigger) => {
@@ -152,7 +152,27 @@ const MasterLayout = ({ children }) => {
         >
           <Icon icon="radix-icons:cross-2" />
         </button>
-        <div>
+        {/* <div>
+          <Link href="/home" className="sidebar-logo">
+            <img
+              src="/assets/images/logo2.png"
+              alt="site logo"
+              className="light-logo"
+            />
+            <img
+              src="/assets/images/logo2.png"
+              alt="site logo"
+              className="dark-logo"
+            />
+            <img
+              src="/assets/images/favicon2.png"
+              alt="site logo"
+              className="logo-icon"
+            />
+          </Link>
+        </div> */}
+
+        <div className="sidebar-logo-wrapper">
           <Link href="/home" className="sidebar-logo">
             <img
               src="/assets/images/logo2.png"
@@ -171,6 +191,7 @@ const MasterLayout = ({ children }) => {
             />
           </Link>
         </div>
+
         <div className="sidebar-menu-area">
           <ul className="sidebar-menu" id="sidebar-menu">
             <li className="mb-2">
@@ -188,7 +209,7 @@ const MasterLayout = ({ children }) => {
             <li className="dropdown">
               <Link href="#">
                 <TbUsersPlus className="menu-icon" />
-                <span>Users</span>
+                <span>Employees</span>
               </Link>
               <ul className="sidebar-submenu">
                 <li>
@@ -197,7 +218,7 @@ const MasterLayout = ({ children }) => {
                     className={pathname === "/all-users" ? "active-page" : ""}
                   >
                     <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
-                    All Users
+                    All Employees
                   </Link>
                 </li>
                 <li>
@@ -208,7 +229,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
-                    Deleted Users
+                    Deleted Employees
                   </Link>
                 </li>
                 {/* Credit/Debit Amount Section */}
@@ -519,8 +540,9 @@ const MasterLayout = ({ children }) => {
                           <Link
                             key={note.giftId || idx}
                             href="/notifications"
-                            className={`px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between ${note.status === "pending" ? "bg-neutral-50" : ""
-                              }`}
+                            className={`px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between ${
+                              note.status === "pending" ? "bg-neutral-50" : ""
+                            }`}
                           >
                             <div className="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
                               <span className="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">

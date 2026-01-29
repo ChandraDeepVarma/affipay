@@ -7,8 +7,8 @@ import { UserStatusProvider } from "@/context/UserStatusContext";
 import Providers from "./providers";
 
 export const metadata = {
-  title: "Cash2Captcha-admin",
-  description: "Cash2Captcha-admin",
+  title: "Effipay-admin",
+  description: "Effipay-admin",
 };
 
 export default function RootLayout({ children }) {

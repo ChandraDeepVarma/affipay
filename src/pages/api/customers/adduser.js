@@ -1,25 +1,11 @@
 import dbConnect from "@/lib/mongoose";
-import { generateReferralCode } from "@/utils/referralCode";
 import Customer from "@/models/Customer";
 import crypto from "crypto";
-
-async function generateUniqueReferralCode(Customer) {
-  let code;
-  let exists = true;
-
-  while (exists) {
-    code = generateReferralCode();
-    exists = await Customer.exists({ referralCode: code });
-  }
-
-  return code;
-}
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
-
 
   await dbConnect();
 
@@ -34,8 +20,8 @@ export default async function handler(req, res) {
     addressLine2,
     city,
     dob,
-    tshirtSize,
     gender,
+    isVerified,
     isActive,
 
     // Banking Details
@@ -102,9 +88,6 @@ export default async function handler(req, res) {
       accountHolderName,
     });
 
-    if (!newCustomer.referralCode) {
-      newCustomer.referralCode = await generateUniqueReferralCode(Customer);
-    }
     await newCustomer.save();
 
     return res.status(201).json({
