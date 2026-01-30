@@ -48,7 +48,6 @@ const PlansList = () => {
         const settingsData = await settingsRes.json();
         if (settingsData.success && settingsData.settings) {
           setSettingsData(settingsData.settings);
-
         }
       } catch (err) {
         console.error("Error fetching site settings:", err);
@@ -101,7 +100,7 @@ const PlansList = () => {
       }
 
       setPlans((prev) =>
-        prev.map((p) => (p._id === id ? { ...p, isActive: out.isActive } : p))
+        prev.map((p) => (p._id === id ? { ...p, isActive: out.isActive } : p)),
       );
 
       Swal.fire({
@@ -137,7 +136,12 @@ const PlansList = () => {
           </button>
         </div>
 
-        <h5><mark>Note : Your current settings of Buy Button Mode is "<b>{settingsData.buyButtonMode}</b>"</mark></h5>
+        {/* <h5>
+          <mark>
+            Note : Your current settings of Buy Button Mode is "
+            <b>{settingsData.buyButtonMode}</b>"
+          </mark>
+        </h5> */}
         <hr />
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
@@ -145,63 +149,76 @@ const PlansList = () => {
               <thead>
                 <tr>
                   <th className="text-center">S.No</th>
-                  <th className="text-center">Plan Name</th>
+                  <th>Plan Name</th>
                   <th className="text-center">Price (₹)</th>
-                  <th className="text-center">Earning Type</th>
-                  <th className="text-center">Captcha/Day</th>
-                  <th className="text-center">Min Daily Earning</th>
-                  <th className="text-center">Modified At</th>
+                  <th className="text-center">Validity</th>
+                  <th>Benefits</th>
+                  <th className="text-center">Status</th>
+                  <th className="text-center">Last Updated</th>
                   <th className="text-center">Action</th>
                 </tr>
               </thead>
 
               <tbody>
                 {plans.length === 0 ? (
-                  loading ? (
-                    <tr>
-                      <td colSpan="8" className="text-center py-4">
-                        Loading...
-                      </td>
-                    </tr>
-                  ) : (
-                    <tr>
-                      <td colSpan="8" className="text-center py-4">
-                        No plans found
-                      </td>
-                    </tr>
-                  )
+                  <tr>
+                    <td colSpan="8" className="text-center py-4">
+                      No plans found
+                    </td>
+                  </tr>
                 ) : (
-                  plans.map((plan, index) => (
-                    <tr key={plan._id}>
-                      <td className="text-center">{index + 1}</td>
-
-                      <td className="text-center">{plan.planName}</td>
-
-                      <td className="text-center">₹{plan.price}</td>
-
+                  plans.map(
+                    (plan, index) => (
+                      console.log(plan._id, plan.validityDays),
+                      (
+                        <tr key={plan._id} style={{ verticalAlign: "top" }}>
+                          {/* S.No */}
+                          <td className="text-center">{index + 1}</td>
+                          {/* Plan Name */}
+                          <td>
+                            <div className="fw-semibold">{plan.planName}</div>
+                          </td>
+                          {/* Price */}
+                          <td className="text-center">₹{plan.price}</td>
+                          {/* Validity */}
+                          <td className="text-center">
+                            {plan.validityDays} days
+                          </td>
+                          {/* Benefits */}
+                          <td>
+                            {plan.benefits && plan.benefits.length > 0 ? (
+                              <ul className="mb-0 ps-3">
+                                {plan.benefits.slice(0, 3).map((b, i) => (
+                                  <li key={i} className="text-sm">
+                                    {b}
+                                  </li>
+                                ))}
+                                {plan.benefits.length > 3 && (
+                                  <li className="text-muted text-xs">
+                                    +{plan.benefits.length - 3} more
+                                  </li>
+                                )}
+                              </ul>
+                            ) : (
+                              <span className="text-muted">N/A</span>
+                            )}
+                          </td>
+                          {/* Status */}
+                          <td className="text-center">
+                            <span
+                              className={`px-8 py-1 radius-4 fw-medium text-xs border ${
+                                plan.isActive
+                                  ? "bg-success-100 text-success-700 border-success-400"
+                                  : "bg-danger-100 text-danger-700 border-danger-400"
+                              }`}
+                            >
+                              {plan.isActive ? "Active" : "Inactive"}
+                            </span>
+                          </td>
+                          {/* Created At
                       <td className="text-center">
-                        <span
-                          className={`px-8 py-1 radius-4 fw-medium text-xs border ${plan.earningType === "unlimited"
-                            ? "bg-success-200 text-success-700 border-success-400"
-                            : "bg-info-200 text-info-800 border-info-400"
-                            }`}
-                        >
-                          {plan.earningType}
-                        </span>
-                      </td>
-
-                      <td className="text-center">
-                        {plan.captchaPerDay || "N/A"}
-                      </td>
-
-                      <td className="text-center">
-                        {plan.minimumEarningPerDay || "N/A"}
-                      </td>
-
-                      <td className="text-center">
-                        {plan.updatedAt
-                          ? new Date(plan.updatedAt)
-                            .toLocaleString("en-GB", {
+                        {plan.createdAt
+                          ? new Date(plan.createdAt).toLocaleString("en-GB", {
                               day: "2-digit",
                               month: "2-digit",
                               year: "numeric",
@@ -209,47 +226,54 @@ const PlansList = () => {
                               minute: "2-digit",
                               hour12: true,
                             })
-                            .replace("am", "AM")
-                            .replace("pm", "PM")
                           : "N/A"}
-                      </td>
+                      </td> */}
+                          {/* Updated At */}
+                          <td className="text-center">
+                            {plan.updatedAt
+                              ? new Date(plan.updatedAt).toLocaleString(
+                                  "en-GB",
+                                  {
+                                    day: "2-digit",
+                                    month: "2-digit",
+                                    year: "numeric",
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  },
+                                )
+                              : "N/A"}
+                          </td>
+                          {/* Actions */}
+                          <td className="text-center">
+                            <div className="d-flex justify-content-center gap-2">
+                              {/* EDIT */}
+                              <button
+                                className="px-10 py-2 radius-4 fw-medium text-xs border bg-success-100 text-success-700 border-success-400"
+                                onClick={() => handleEdit(plan._id)}
+                              >
+                                Edit
+                              </button>
 
-                      <td className="text-center">
-                        <div className="d-flex justify-content-center gap-2">
-                          <div className="d-flex justify-content-center gap-2">
-                            {/* EDIT */}
-                            <button
-                              className="px-10 py-2 radius-4 fw-medium text-xs border bg-success-100 text-success-700 border-success-400"
-                              onClick={() => handleEdit(plan._id)}
-                            >
-                              Edit
-                            </button>
-
-                            {/* TOGGLE ACTIVE/INACTIVE */}
-                            <button
-                              className={`px-10 py-2 radius-4 fw-medium text-xs border ${plan.isActive
-                                ? "bg-warning-100 text-warning-700 border-warning-400"
-                                : "bg-info-100 text-info-700 border-info-400"
+                              {/* TOGGLE STATUS */}
+                              <button
+                                className={`px-10 py-2 radius-4 fw-medium text-xs border ${
+                                  plan.isActive
+                                    ? "bg-warning-100 text-warning-700 border-warning-400"
+                                    : "bg-info-100 text-info-700 border-info-400"
                                 }`}
-                              onClick={() =>
-                                handleToggleStatus(plan._id, plan.isActive)
-                              }
-                            >
-                              {plan.isActive ? "Deactivate" : "Activate"}
-                            </button>
-
-                            {/* DELETE */}
-                            {/* <button
-                              className="px-10 py-2 radius-4 fw-medium text-xs border bg-danger-100 text-danger-700 border-danger-400"
-                              onClick={() => handleDelete(plan._id)}
-                            >
-                              Delete
-                            </button> */}
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
+                                onClick={() =>
+                                  handleToggleStatus(plan._id, plan.isActive)
+                                }
+                              >
+                                {plan.isActive ? "Deactivate" : "Activate"}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    ),
+                  )
                 )}
               </tbody>
             </table>

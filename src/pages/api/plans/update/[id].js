@@ -3,61 +3,56 @@ import Plan from "@/models/Plan";
 
 export const config = {
   api: {
-    bodyParser: true, // JSON
+    bodyParser: true,
   },
 };
 
 export default async function handler(req, res) {
-  if (req.method !== "PATCH" && req.method !== "POST")
+  if (req.method !== "PATCH") {
     return res.status(405).json({ error: "Method Not Allowed" });
+  }
 
   try {
     await dbConnect();
 
     const { id } = req.query;
-    if (!id) return res.status(400).json({ error: "Plan ID is required" });
-
-    const {
-      planName,
-      price,
-      earningType,
-      captchaPerDay,
-      minimumEarningPerDay,
-      referralPerLogin,
-      slabs,
-      referrals,
-      manualPaymentQrCode,
-      manualPaymentInstructions,
-    } = req.body;
-
-    // Validate
-    if (!planName || !price) {
-      return res
-        .status(400)
-        .json({ error: "Plan Name and Price are required" });
+    if (!id) {
+      return res.status(400).json({ error: "Plan ID is required" });
     }
 
-    // Prepare update object
+    const { planName, price, validityDays, benefits, overview } = req.body;
+
+    // ✅ Validation
+    if (!planName || !price || !validityDays) {
+      return res.status(400).json({
+        error: "Plan name, price and validity are required",
+      });
+    }
+
+    if (validityDays < 30 || validityDays > 360) {
+      return res.status(400).json({
+        error: "Validity must be between 30 and 360 days",
+      });
+    }
+
     const updateDoc = {
       planName,
       price: Number(price),
-      earningType,
-      captchaPerDay: Number(captchaPerDay || 0),
-      minimumEarningPerDay: Number(minimumEarningPerDay || 0),
-      referralPerLogin: Number(referralPerLogin || 0),
-      slabs: Array.isArray(slabs) ? slabs : [],
-      referrals: Array.isArray(referrals) ? referrals : [],
-      manualPaymentQrCode: manualPaymentQrCode || "",
-      manualPaymentInstructions: manualPaymentInstructions || "",
+      validityDays: Number(validityDays),
+      benefits: Array.isArray(benefits)
+        ? benefits.filter((b) => b.trim() !== "")
+        : [],
+      overview: overview || "",
     };
 
-    // Update and return updated plan
     const updated = await Plan.findByIdAndUpdate(id, updateDoc, {
       new: true,
       runValidators: true,
     });
 
-    if (!updated) return res.status(404).json({ error: "Plan not found" });
+    if (!updated) {
+      return res.status(404).json({ error: "Plan not found" });
+    }
 
     return res.status(200).json({
       success: true,
