@@ -8,7 +8,7 @@ const PlanSchema = new mongoose.Schema(
     validityDays: {
       type: Number,
       required: true,
-      min: 30,
+      min: 1,
       max: 360,
     },
 

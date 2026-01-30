@@ -1,6 +1,4 @@
-// // // middleware.js
-
-
+// // middleware.js
 
 import { getToken } from "next-auth/jwt";
 import { NextResponse } from "next/server";
@@ -24,26 +22,37 @@ export async function middleware(req) {
 
   console.log("MIDDLEWARE TOKEN:", token);
 
-  // ✅ Redirect logged-in users away from login
-  if (pathname === "/login" && token) {
-    return NextResponse.redirect(new URL("/home", req.url));
-  }
-
-  // ✅ Public routes
-  if (pathname === "/login" || pathname === "/register") {
+  // ✅ PUBLIC ROUTES
+  if (
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/employee/login"
+  ) {
+    // redirect logged-in users away from admin login ONLY
+    if (pathname === "/login" && token) {
+      return NextResponse.redirect(new URL("/home", req.url));
+    }
     return NextResponse.next();
   }
 
-  // ❌ Not authenticated
+  // ❌ NOT AUTHENTICATED
   if (!token) {
+    if (pathname.startsWith("/employee")) {
+      return NextResponse.redirect(new URL("/employee/login", req.url));
+    }
     return NextResponse.redirect(
       new URL("/login?message=login-required", req.url),
     );
   }
 
-  // ❌ Not admin
-  if (!token.isAdmin) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  // 👑 ADMIN trying to access employee area
+  if (token.isAdmin && pathname.startsWith("/employee")) {
+    return NextResponse.redirect(new URL("/home", req.url));
+  }
+
+  // 👤 EMPLOYEE trying to access admin area
+  if (!token.isAdmin && !pathname.startsWith("/employee")) {
+    return NextResponse.redirect(new URL("/employee/dashboard", req.url));
   }
 
   return NextResponse.next();
@@ -51,6 +60,7 @@ export async function middleware(req) {
 
 export const config = {
   matcher: [
+    // Admin routes (UNCHANGED)
     "/home",
     "/all-users/:path*",
     "/deleted-users/:path*",
@@ -73,54 +83,63 @@ export const config = {
     "/subscription-requests/:path*",
     "/withdrawal-requests/:path*",
     "/subscription-plans/:path*",
+
+    // ➕ Employee routes
+    "/employee/:path*",
   ],
 };
 
-// ===========================================================1st code=================================
+// admin login working code ==================================================
 
 // import { getToken } from "next-auth/jwt";
 // import { NextResponse } from "next/server";
 
 // export async function middleware(req) {
-//   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-//   console.log("middle ware request : ", req);
-//   console.log("TOKEN IN MIDDLEWARE:", token);
-
 //   const { pathname } = req.nextUrl;
 
-//   // ✅ Always allow next-auth API routes and static files
+//   // ✅ Always allow NextAuth APIs & static assets FIRST
 //   if (
 //     pathname.startsWith("/api/auth") ||
 //     pathname.startsWith("/_next") ||
-//     pathname.includes(".") // static files: .png, .jpg, .css, etc.
+//     pathname.includes(".")
 //   ) {
 //     return NextResponse.next();
 //   }
 
+//   const token = await getToken({
+//     req,
+//     secret: process.env.NEXTAUTH_SECRET,
+//   });
+
+//   console.log("MIDDLEWARE TOKEN:", token);
+
+//   // ✅ Redirect logged-in users away from login
+//   if (pathname === "/login" && token) {
+//     return NextResponse.redirect(new URL("/home", req.url));
+//   }
+
 //   // ✅ Public routes
-//   if (pathname.startsWith("/login") || pathname.startsWith("/register")) {
+//   if (pathname === "/login" || pathname === "/register") {
 //     return NextResponse.next();
 //   }
 
-//   // ❌ No session → redirect to login
-//   if (!token || !token.email || !token.isAdmin) {
+//   // ❌ Not authenticated
+//   if (!token) {
 //     return NextResponse.redirect(
-//       new URL("/login?message=login-required", req.url)
+//       new URL("/login?message=login-required", req.url),
 //     );
 //   }
 
-//   // ❌ Not admin → redirect
+//   // ❌ Not admin
 //   if (!token.isAdmin) {
 //     return NextResponse.redirect(new URL("/login", req.url));
 //   }
 
-//   // ✅ Admin authenticated → allow
 //   return NextResponse.next();
 // }
 
 // export const config = {
 //   matcher: [
-//     "/login", // 🔴 REQUIRED
 //     "/home",
 //     "/all-users/:path*",
 //     "/deleted-users/:path*",
@@ -143,13 +162,5 @@ export const config = {
 //     "/subscription-requests/:path*",
 //     "/withdrawal-requests/:path*",
 //     "/subscription-plans/:path*",
-//     "/subscriptions-report/:path*",
-//     "/manual-subscription-requests/:path*",
-//     "/home-sliders",
-//     "/marketing-banners",
-//     "/contact-messages",
-//     "/ad-management",
-//     "/subscriptions-report",
-//     "/login-logs"
 //   ],
 // };

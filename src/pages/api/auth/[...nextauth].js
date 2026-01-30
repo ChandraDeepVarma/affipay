@@ -18,8 +18,9 @@ export default NextAuth({
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: {}, // email OR phone
+        email: {},
         password: {},
+        userType: {},
       },
 
       async authorize(credentials) {
@@ -53,12 +54,10 @@ export default NextAuth({
 
         const userType = credentials.userType || "admin";
 
-        // Admin login
         if (userType === "admin" && !user.isAdmin) {
           throw new Error("Admin access only");
         }
 
-        // Employee login
         if (userType === "employee" && user.isAdmin) {
           throw new Error("Employee access only");
         }

@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/mongoose";
 import Customer from "@/models/Customer";
-import UserSubscription from "@/models/UserSubscription";
+import UserSubscription from "@/models/CustomerSubscription";
 
 export default async function handler(req, res) {
   try {

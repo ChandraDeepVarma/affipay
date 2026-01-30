@@ -1,7 +1,7 @@
 import dbConnect from "./src/lib/mongoose.js";
 import Transaction from "./src/models/Transaction.js";
 
-import UserSubscription from "./src/models/UserSubscription.js";
+import UserSubscription from "./src/models/CustomerSubscription.js";
 
 async function check() {
   await dbConnect();

@@ -1,5 +1,5 @@
 import dbConnect from "@/lib/mongoose";
-import UserSubscription from "@/models/UserSubscription";
+import UserSubscription from "@/models/CustomerSubscription";
 import Customer from "@/models/Customer";
 import Plan from "@/models/Plan";
 import Transaction from "@/models/Transaction";

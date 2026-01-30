@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/mongoose";
 import Transaction from "@/models/Transaction";
 import Customer from "@/models/Customer";
-import UserSubscription from "@/models/UserSubscription";
+import UserSubscription from "@/models/CustomerSubscription";
 
 export default async function handler(req, res) {
   if (req.method === "OPTIONS") {

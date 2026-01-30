@@ -6,7 +6,7 @@ import { Form, Button } from "react-bootstrap";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import MasterLayout from "@/masterLayout/MasterLayout";
-// import Breadcrumb from "@/components/Breadcrumb";
+import Breadcrumb from "@/components/Breadcrumb";
 
 const SunEditor = dynamic(() => import("suneditor-react"), { ssr: false });
 import "suneditor/dist/css/suneditor.min.css";
@@ -69,139 +69,121 @@ export default function CreatePlan() {
 
   return (
     <MasterLayout>
-      <div className="px-4 py-3">
-        {/* PAGE HEADER */}
-        <div className="mb-4">
-          <h3 className="fw-bold mb-1">Create Subscription Plan</h3>
-          <p className="text-muted mb-0">
-            Define healthcare subscription plans available for customers.
-          </p>
-        </div>
+      <Breadcrumb title="Create Subscription Plan" />
 
-        <Form onSubmit={handleSubmit}>
-          {/* PLAN DETAILS */}
-          <div className="bg-white rounded-3 border mb-4">
-            <div className="px-4 py-3 border-bottom">
-              <h5 className="mb-0 fw-semibold">Plan Details</h5>
-            </div>
+      <div className="card h-100 p-0 radius-12 overflow-hidden">
+        <div className="card-body p-40">
+          <Form onSubmit={handleSubmit}>
+            <h4 className="mb-4">Plan Information</h4>
 
-            <div className="px-4 py-4">
-              <div className="row g-4">
-                <div className="col-md-6">
-                  <Form.Group>
-                    <Form.Label>Plan Name</Form.Label>
-                    <Form.Control
-                      placeholder="Eg: Basic Healthcare"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                  </Form.Group>
-                </div>
+            {/* Row 1 */}
+            <div className="row g-4">
+              <div className="col-sm-6">
+                <Form.Group>
+                  <Form.Label>Plan Name *</Form.Label>
+                  <Form.Control
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="Eg: Basic Healthcare"
+                    required
+                  />
+                </Form.Group>
+              </div>
 
-                <div className="col-md-3">
-                  <Form.Group>
-                    <Form.Label>Price (₹)</Form.Label>
-                    <Form.Control
-                      type="number"
-                      placeholder="4999"
-                      name="price"
-                      value={formData.price}
-                      onChange={handleChange}
-                      required
-                    />
-                  </Form.Group>
-                </div>
+              <div className="col-sm-3">
+                <Form.Group>
+                  <Form.Label>Price (₹) *</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </div>
 
-                <div className="col-md-3">
-                  <Form.Group>
-                    <Form.Label>Validity (Days)</Form.Label>
-                    <Form.Control
-                      type="number"
-                      min={30}
-                      max={360}
-                      name="validityDays"
-                      value={formData.validityDays}
-                      onChange={handleChange}
-                      required
-                    />
-                    <small className="text-muted">Allowed: 30 – 360 days</small>
-                  </Form.Group>
-                </div>
+              <div className="col-sm-3">
+                <Form.Group>
+                  <Form.Label>Validity (Days) *</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="validityDays"
+                    min={1}
+                    max={360}
+                    value={formData.validityDays}
+                    onChange={handleChange}
+                    required
+                  />
+                  <small className="text-muted">Allowed: 1 – 360 days</small>
+                </Form.Group>
               </div>
             </div>
-          </div>
 
-          {/* PLAN BENEFITS */}
-          <div className="bg-white rounded-3 border mb-4">
-            <div className="px-4 py-3 border-bottom">
-              <h5 className="mb-0 fw-semibold">Plan Benefits</h5>
-            </div>
+            {/* Benefits */}
+            <h4 className="mt-5 mb-3">Plan Benefits</h4>
 
-            <div className="px-4 py-4">
-              {benefits.map((b, i) => (
-                <div key={i} className="d-flex align-items-center gap-3 mb-3">
-                  <Form.Control
-                    placeholder="Eg: Unlimited doctor consultations"
-                    value={b}
-                    onChange={(e) => updateBenefit(i, e.target.value)}
-                  />
+            {benefits.map((b, i) => (
+              <div className="row g-4 mb-2" key={i}>
+                <div className="col-sm-10 mb-3">
+                  <Form.Group>
+                    <Form.Control
+                      value={b}
+                      onChange={(e) => updateBenefit(i, e.target.value)}
+                      placeholder="Eg: Unlimited doctor consultations"
+                    />
+                  </Form.Group>
+                </div>
 
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
+                <div className="col-sm-2 mb-3 d-flex align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-outline-danger"
                     onClick={() => removeBenefit(i)}
                     disabled={benefits.length === 1}
                   >
-                    ✕
-                  </Button>
+                    Remove
+                  </button>
                 </div>
-              ))}
+              </div>
+            ))}
 
-              <Button variant="outline-primary" size="sm" onClick={addBenefit}>
-                + Add Benefit
+            <Button variant="secondary" className="mt-3" onClick={addBenefit}>
+              + Add Benefit
+            </Button>
+
+            {/* Overview */}
+            <h4 className="mt-5 mb-3">Plan Overview</h4>
+
+            <Form.Group>
+              <SunEditor
+                height="300px"
+                setContents={formData.overview}
+                onChange={(content) =>
+                  setFormData((p) => ({ ...p, overview: content }))
+                }
+              />
+            </Form.Group>
+
+            {/* Submit */}
+            <div className="d-flex justify-content-center mt-5">
+              <Button
+                type="button"
+                className="btn bg-red-500 text-white px-5 py-3 radius-8 me-3"
+                onClick={() => router.push("/subscription-plans")}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="btn btn-primary px-5 py-3 radius-8"
+              >
+                Create Plan
               </Button>
             </div>
-          </div>
-
-          {/* PLAN OVERVIEW */}
-          <div className="bg-white rounded-3 border mb-4">
-            <div className="px-4 py-3 border-bottom">
-              <h5 className="mb-0 fw-semibold">Plan Overview</h5>
-            </div>
-
-            <div className="px-4 py-4">
-              <div className="border rounded">
-                <SunEditor
-                  height="320px"
-                  setContents={formData.overview}
-                  onChange={(content) =>
-                    setFormData((p) => ({
-                      ...p,
-                      overview: content,
-                    }))
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* ACTION FOOTER */}
-          <div className="d-flex justify-content-end gap-3 pt-4 border-top">
-            <Button
-              variant="light"
-              className="px-4"
-              onClick={() => router.push("/subscription-plans")}
-            >
-              Cancel
-            </Button>
-
-            <Button type="submit" variant="primary" className="px-4">
-              Create Plan
-            </Button>
-          </div>
-        </Form>
+          </Form>
+        </div>
       </div>
     </MasterLayout>
   );

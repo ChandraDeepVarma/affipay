@@ -124,102 +124,119 @@ export default function EditPlan({ params }) {
     <MasterLayout>
       <Breadcrumb title="Edit Subscription Plan" />
 
-      <div className="bg-white rounded-3 border p-4">
-        <Form onSubmit={handleSubmit}>
-          {/* PLAN DETAILS */}
-          <h5 className="mb-3">Plan Details</h5>
+      <div className="card h-100 p-0 radius-12 overflow-hidden">
+        <div className="card-body p-40">
+          <Form onSubmit={handleSubmit}>
+            <h4 className="mb-4">Plan Information</h4>
 
-          <div className="row g-4">
-            <div className="col-md-6">
-              <Form.Group>
-                <Form.Label>Plan Name</Form.Label>
-                <Form.Control
-                  name="planName"
-                  value={formData.planName}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
+            {/* Row 1 */}
+            <div className="row g-4">
+              <div className="col-sm-6">
+                <Form.Group>
+                  <Form.Label>Plan Name *</Form.Label>
+                  <Form.Control
+                    name="planName"
+                    value={formData.planName}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </div>
+
+              <div className="col-sm-3">
+                <Form.Group>
+                  <Form.Label>Price (₹) *</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    required
+                  />
+                </Form.Group>
+              </div>
+
+              <div className="col-sm-3">
+                <Form.Group>
+                  <Form.Label>Validity (Days) *</Form.Label>
+                  <Form.Control
+                    type="number"
+                    name="validityDays"
+                    min={1}
+                    max={360}
+                    value={formData.validityDays}
+                    onChange={handleChange}
+                    required
+                  />
+                  <small className="text-muted">Allowed: 1 – 360 days</small>
+                </Form.Group>
+              </div>
             </div>
 
-            <div className="col-md-3">
-              <Form.Group>
-                <Form.Label>Price (₹)</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="price"
-                  value={formData.price}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </div>
+            {/* BENEFITS */}
+            <h4 className="mt-5 mb-3">Plan Benefits</h4>
 
-            <div className="col-md-3">
-              <Form.Group>
-                <Form.Label>Validity (Days)</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="validityDays"
-                  min={30}
-                  max={360}
-                  value={formData.validityDays}
-                  onChange={handleChange}
-                  required
-                />
-              </Form.Group>
-            </div>
-          </div>
+            {benefits.map((b, i) => (
+              <div className="row g-4 mb-2" key={i}>
+                <div className="col-sm-10 mb-3">
+                  <Form.Group>
+                    <Form.Control
+                      value={b}
+                      onChange={(e) => updateBenefit(i, e.target.value)}
+                      placeholder="Eg: Unlimited doctor consultations"
+                    />
+                  </Form.Group>
+                </div>
 
-          {/* BENEFITS */}
-          <h5 className="mt-4 mb-3">Benefits</h5>
+                <div className="col-sm-2 mb-3 d-flex align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-outline-danger"
+                    onClick={() => removeBenefit(i)}
+                    disabled={benefits.length === 1}
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            ))}
 
-          {benefits.map((b, i) => (
-            <div key={i} className="d-flex align-items-center gap-3 mb-2">
-              <Form.Control
-                value={b}
-                onChange={(e) => updateBenefit(i, e.target.value)}
-                placeholder="Eg: Unlimited doctor consultations"
+            <Button variant="secondary" className="mt-10" onClick={addBenefit}>
+              + Add Benefit
+            </Button>
+
+            {/* OVERVIEW */}
+            <h4 className="mt-5 mb-2">Plan Overview</h4>
+
+            <Form.Group>
+              <SunEditor
+                height="300px"
+                setContents={formData.overview}
+                onChange={(content) =>
+                  setFormData((p) => ({ ...p, overview: content }))
+                }
               />
+            </Form.Group>
+
+            {/* ACTIONS */}
+            <div className="d-flex justify-content-center mt-5">
               <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={() => removeBenefit(i)}
-                disabled={benefits.length === 1}
+                type="button"
+                className="btn bg-red-500 text-white px-5 py-3 radius-8 me-3"
+                onClick={() => router.push("/subscription-plans")}
               >
-                ✕
+                Cancel
+              </Button>
+
+              <Button
+                type="submit"
+                className="btn btn-primary px-5 py-3 radius-8"
+              >
+                Update Plan
               </Button>
             </div>
-          ))}
-
-          <Button variant="outline-primary" size="sm" onClick={addBenefit}>
-            + Add Benefit
-          </Button>
-
-          {/* OVERVIEW */}
-          <h5 className="mt-4 mb-3">Plan Overview</h5>
-
-          <SunEditor
-            height="300px"
-            setContents={formData.overview}
-            onChange={(content) =>
-              setFormData((p) => ({ ...p, overview: content }))
-            }
-          />
-
-          {/* ACTIONS */}
-          <div className="d-flex justify-content-end gap-3 mt-4">
-            <Button
-              variant="light"
-              onClick={() => router.push("/subscription-plans")}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" variant="primary">
-              Update Plan
-            </Button>
-          </div>
-        </Form>
+          </Form>
+        </div>
       </div>
     </MasterLayout>
   );
