@@ -3,7 +3,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Breadcrumb from "@/components/Breadcrumb";
 import { Card } from "react-bootstrap";
 import { Icon } from "@iconify/react";
 
