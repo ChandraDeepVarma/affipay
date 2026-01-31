@@ -29,9 +29,9 @@ export default async function handler(req, res) {
       });
     }
 
-    if (validityDays < 30 || validityDays > 360) {
+    if (validityDays < 0) {
       return res.status(400).json({
-        error: "Validity must be between 30 and 360 days",
+        error: "Validity must be greater than 0 days",
       });
     }
 

@@ -9,7 +9,6 @@ const PlanSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 1,
-      max: 360,
     },
 
     benefits: {

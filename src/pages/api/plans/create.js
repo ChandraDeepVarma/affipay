@@ -18,15 +18,15 @@ export default async function handler(req, res) {
     const { planName, price, validityDays, benefits, overview, isActive } = req.body;
 
     // ✅ Validation
-    if (!planName || !price || !validityDays) { 
+    if (!planName || !price || !validityDays) {
       return res.status(400).json({
         error: "Plan name, price and validity are required",
       });
     }
 
-    if (validityDays < 30 || validityDays > 360) {
+    if (validityDays < 0) {
       return res.status(400).json({
-        error: "Validity must be between 30 and 360 days",
+        error: "Validity must be greater than 0 days",
       });
     }
 

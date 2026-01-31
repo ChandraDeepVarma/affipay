@@ -309,10 +309,7 @@ const UsersListLayer = () => {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Phone</th>
-                  <th>Blood Group</th>
-                  <th>Emergency Contact</th>
                   <th>Joining Date</th>
-                  <th>Remarks</th>
                   <th>Status</th>
                   <th>Created At</th>
                   <th>Updated At</th>
@@ -331,30 +328,10 @@ const UsersListLayer = () => {
 
                     <td>{u.phone || "—"}</td>
 
-                    <td>{u.bloodGroup || "—"}</td>
-
-                    <td>
-                      {u.emergencyContact?.name
-                        ? `${u.emergencyContact.name} (${u.emergencyContact.phone || "—"})`
-                        : "—"}
-                    </td>
-
                     <td>
                       {u.joiningDate
                         ? new Date(u.joiningDate).toLocaleDateString("en-GB")
                         : "—"}
-                    </td>
-
-                    <td
-                      style={{
-                        maxWidth: "200px",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                      title={u.remarks}
-                    >
-                      {u.remarks || "—"}
                     </td>
 
                     <td>

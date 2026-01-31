@@ -232,64 +232,6 @@ const MasterLayout = ({ children }) => {
                     Deleted Employees
                   </Link>
                 </li>
-                {/* Credit/Debit Amount Section */}
-                <li>
-                  <Link
-                    href="/credit-debit-amount"
-                    className={
-                      pathname === "/credit-debit-amount" ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-success-main w-auto" />{" "}
-                    Credit/Debit Amount
-                  </Link>
-                </li>
-
-                <li>
-                  <Link
-                    href="/contact-messages"
-                    className={
-                      pathname === "/contact-messages" ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-info-main w-auto" />{" "}
-                    Contact Messages
-                  </Link>
-                </li>
-              </ul>
-            </li>
-
-            {/* Master Data for Captcha2Captcha */}
-            <li className="dropdown">
-              <Link href="#">
-                <LiaUserCogSolid className="menu-icon" />
-                <span>Master Data</span>
-              </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <Link
-                    href="/home-sliders"
-                    className={
-                      pathname === "/home-sliders" ? "active-page" : ""
-                    }
-                  >
-                    <MdOutlineViewCarousel />
-                    <span>Home Sliders</span>
-                  </Link>
-                </li>
-
-                {/* Ad Management */}
-                <li>
-                  <Link
-                    href="/ad-management"
-                    className={
-                      pathname === "/ad-management" ? "active-page" : ""
-                    }
-                  >
-                    <AiTwotoneSound />
-                    <span>Ad Management</span>
-                  </Link>
-                </li>
               </ul>
             </li>
 

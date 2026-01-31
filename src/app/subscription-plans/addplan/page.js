@@ -40,8 +40,8 @@ export default function CreatePlan() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.validityDays < 30 || formData.validityDays > 360) {
-      Swal.fire("Error", "Validity must be between 30 and 360 days", "error");
+    if (formData.validityDays < 1) {
+      Swal.fire("Error", "Validity must be set greater than 0 days", "error");
       return;
     }
 
@@ -111,12 +111,10 @@ export default function CreatePlan() {
                     type="number"
                     name="validityDays"
                     min={1}
-                    max={360}
                     value={formData.validityDays}
                     onChange={handleChange}
                     required
                   />
-                  <small className="text-muted">Allowed: 1 – 360 days</small>
                 </Form.Group>
               </div>
             </div>
