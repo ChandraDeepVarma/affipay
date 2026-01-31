@@ -4,8 +4,8 @@ import MasterLayout from "@/masterLayout/MasterLayout";
 import React from "react";
 
 export const metadata = {
-  title: "Cash2Captcha- Subscription Requests",
-  description: "Cash2Captcha- Subscription Requests",
+  title: "Affipay- Subscription Requests",
+  description: "Affipay- Subscription Requests",
 };
 
 const page = () => {

@@ -96,7 +96,7 @@ export default function EmployeeLayout({ children }) {
               className="sidebar-toggle"
               onClick={() => setSidebarActive(!sidebarActive)}
             >
-              <Icon icon="heroicons:bars-3-solid" />
+              <Icon icon="heroicons:bars-3-solid" width="32" height="32" />
             </button>
 
             <div className="d-flex align-items-center gap-3">

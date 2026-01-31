@@ -418,7 +418,7 @@ const MasterLayout = ({ children }) => {
               </Link>
             </li>
 
-            <li>
+            {/* <li>
               <Link
                 href="/withdrawal-requests"
                 className={
@@ -428,7 +428,7 @@ const MasterLayout = ({ children }) => {
                 <TbGitPullRequest className="menu-icon" />
                 <span>Withdraw Requests</span>
               </Link>
-            </li>
+            </li> */}
 
             <li>
               <Link
@@ -665,7 +665,7 @@ const MasterLayout = ({ children }) => {
             <div className="col-auto">
               <p className="mb-0">
                 <small>
-                  © 2025 Cash2Captcha. All Rights Reserved. Developed by{" "}
+                  © 2026 Affipay. All Rights Reserved. Developed by{" "}
                   <span className="text-primary-600">Colourmoon</span>
                 </small>
               </p>

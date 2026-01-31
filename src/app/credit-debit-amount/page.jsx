@@ -3,8 +3,8 @@ import CreditDebitAmount from "@/components/CreditDebitAmount";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Credit/Debit Amount",
-  description: "Cash2Captcha- Credit/Debit Amount",
+  title: "Affipay- Credit/Debit Amount",
+  description: "Affipay- Credit/Debit Amount",
 };
 
 const page = () => {

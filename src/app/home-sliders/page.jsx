@@ -3,8 +3,8 @@ import HomeSlidersPage from "@/components/HomeSlidersPage";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Home Sliders",
-  description: "Cash2Captcha- Home Sliders",
+  title: "Affipay- Home Sliders",
+  description: "Affipay- Home Sliders",
 };
 
 const Page = () => {

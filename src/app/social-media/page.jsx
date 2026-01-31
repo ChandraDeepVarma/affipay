@@ -3,8 +3,8 @@ import SocialMediaContent from "@/components/SocialMediaContent";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Social Media Links",
-  description: "Cash2Captcha- Social Media Links Management",
+  title: "Affipay- Social Media Links",
+  description: "Affipay- Social Media Links Management",
 };
 
 const Page = () => {

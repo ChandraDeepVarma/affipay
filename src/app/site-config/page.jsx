@@ -3,8 +3,8 @@ import Sitesettings from "@/components/Sitesettings";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Site Settings",
-  description: "Cash2Captcha- Site Settings",
+  title: "Affipay- Site Settings",
+  description: "Affipay- Site Settings",
 };
 
 const Page = () => {

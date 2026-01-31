@@ -6,8 +6,8 @@ import MasterLayout from "@/masterLayout/MasterLayout";
 // import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Manage FAQs - Cash2Captcha Admin",
-  description: "Manage FAQs - Cash2Captcha Admin",
+  title: "Manage FAQs - Affipay Admin",
+  description: "Manage FAQs - Affipay Admin",
 };
 
 const ManageFaqsPage = async () => {

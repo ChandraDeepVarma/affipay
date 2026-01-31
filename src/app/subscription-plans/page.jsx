@@ -4,8 +4,8 @@ import UsersListLayer from "@/components/UsersListLayer";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Subscription Plans",
-  description: "Cash2Captcha- Subscription Plans",
+  title: "Affipay- Subscription Plans",
+  description: "Affipay- Subscription Plans",
 };
 
 const Page = () => {

@@ -3,8 +3,8 @@ import Loginlog from "@/components/Loginlog";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Login Logs",
-  description: "Cash2Captcha- Login Logs",
+  title: "Affipay- Login Logs",
+  description: "Affipay- Login Logs",
 };
 
 const Page = () => {

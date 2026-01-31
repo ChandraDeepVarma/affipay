@@ -3,8 +3,8 @@ import RolesStaff from "@/components/RolesStaff";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Staff Roles",
-  description: "Cash2Captcha- Staff Roles",
+  title: "Affipay- Staff Roles",
+  description: "Affipay- Staff Roles",
 };
 
 const Page = () => {

@@ -3,8 +3,8 @@ import PartnersList from "@/components/PartnersList";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Partners List",
-  description: "Cash2Captcha- Partners List",
+  title: "Affipay- Partners List",
+  description: "Affipay- Partners List",
 };
 
 const page = () => {

@@ -3,8 +3,8 @@ import Breadcrumb from "@/components/Breadcrumb";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- All-Transactions",
-  description: "Cash2Captcha- All-Transactions",
+  title: "Affipay- All-Transactions",
+  description: "Affipay- All-Transactions",
 };
 
 const page = () => {

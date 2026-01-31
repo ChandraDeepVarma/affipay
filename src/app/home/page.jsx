@@ -3,8 +3,8 @@ import DashBoardLayerOne from "@/components/DashBoardLayerOne";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Admin Dashboard",
-  description: "Cash2Captcha- Admin Dashboard",
+  title: "Affipay- Admin Dashboard",
+  description: "Affipay- Admin Dashboard",
 };
 const Page = () => {
   return (

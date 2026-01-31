@@ -3,7 +3,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import TermsConditionsContent from "@/components/TermsConditionsContent";
 
 export const metadata = {
-  title: "Terms & Conditions - Cash2Captcha Admin",
+  title: "Terms & Conditions - Affipay Admin",
   description: "Manage Terms & Conditions content for your website",
 };
 

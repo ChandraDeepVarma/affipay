@@ -3,8 +3,8 @@ import NotificationsPage from "@/components/NotificationsPage";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Notifications",
-  description: "Cash2Captcha- Notifications",
+  title: "Affipay- Notifications",
+  description: "Affipay- Notifications",
 };
 
 const Page = () => {

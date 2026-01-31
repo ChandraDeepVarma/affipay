@@ -3,8 +3,8 @@ import UsersDelLayer from "@/components/UsersDelLayer";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Deleted Users",
-  description: "Cash2Captcha- Deleted Users",
+  title: "Affipay- Deleted Users",
+  description: "Affipay- Deleted Users",
 };
 
 const Page = () => {

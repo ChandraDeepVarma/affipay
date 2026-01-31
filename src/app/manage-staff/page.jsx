@@ -3,8 +3,8 @@ import StaffManagement from "@/components/StaffManagement";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Manage Staff",
-  description: "Cash2Captcha- Manage Staff",
+  title: "Affipay- Manage Staff",
+  description: "Affipay- Manage Staff",
 };
 
 const Page = () => {

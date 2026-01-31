@@ -3,8 +3,8 @@ import AdManagement from "@/components/AdManagement";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Ad Management",
-  description: "Cash2Captcha- Ad Management",
+  title: "Affipay- Ad Management",
+  description: "Affipay- Ad Management",
 };
 
 const Page = () => {

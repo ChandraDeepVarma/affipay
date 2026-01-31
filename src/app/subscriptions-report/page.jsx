@@ -3,8 +3,8 @@ import MasterLayout from "@/masterLayout/MasterLayout";
 import Subscriptions from "@/components/subscriptions";
 
 export const metadata = {
-  title: "Cash2Captcha- Subscriptions Reports",
-  description: "Cash2Captcha- Subscriptions Reports",
+  title: "Affipay- Subscriptions Reports",
+  description: "Affipay- Subscriptions Reports",
 };
 
 const Page = () => {

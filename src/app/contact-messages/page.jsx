@@ -3,8 +3,8 @@ import ContactMessagesPage from "@/components/ContactMessagesPage";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Contact Messages",
-  description: "Cash2Captcha- Contact Messages Management",
+  title: "Affipay- Contact Messages",
+  description: "Affipay- Contact Messages Management",
 };
 
 const Page = () => {

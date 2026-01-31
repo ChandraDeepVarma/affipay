@@ -3,8 +3,8 @@ import AboutUsContent from "@/components/AboutUsContent";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- About Us",
-  description: "Cash2Captcha- About Us Content Management",
+  title: "Affipay- About Us",
+  description: "Affipay- About Us Content Management",
 };
 
 const Page = () => {

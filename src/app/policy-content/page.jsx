@@ -3,8 +3,8 @@ import PolicyContent from "@/components/PolicyContent";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
 export const metadata = {
-  title: "Cash2Captcha- Policy Content",
-  description: "Cash2Captcha- Policy Content Management",
+  title: "Affipay- Policy Content",
+  description: "Affipay- Policy Content Management",
 };
 
 const Page = () => {

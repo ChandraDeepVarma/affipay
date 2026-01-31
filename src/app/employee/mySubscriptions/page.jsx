@@ -79,20 +79,11 @@ export default function MySubscriptions() {
             <div key={sub._id} className="col-12 mb-4">
               <Card className="radius-12 shadow-sm">
                 <Card.Body className="p-24">
-                  {/* Header */}
-                  <div className="d-flex justify-content-between align-items-start mb-16">
-                    <h5 className="mb-0">{sub.fullName}</h5>
+                  <h5 className="mb-16">{sub.fullName}</h5>
 
-                    <span
-                      className={`badge ${getStatusBadgeClass(sub.status)} px-12 py-8 radius-6`}
-                    >
-                      {sub.status}
-                    </span>
-                  </div>
-
-                  {/* Content */}
-                  <div className="row text-sm ">
-                    <div className="col-md-6 ">
+                  {/* CONTENT */}
+                  <div className="row text-sm">
+                    <div className="col-md-6">
                       <p>
                         <strong>Mobile:</strong> {sub.mobile}
                       </p>
@@ -117,6 +108,17 @@ export default function MySubscriptions() {
                         {new Date(sub.createdAt).toLocaleDateString()}
                       </p>
                     </div>
+                  </div>
+
+                  {/* STATUS — ALWAYS BOTTOM LEFT */}
+                  <div className="mt-12">
+                    <span
+                      className={`badge ${getStatusBadgeClass(
+                        sub.status,
+                      )} px-12 py-8 radius-6`}
+                    >
+                      {sub.status}
+                    </span>
                   </div>
                 </Card.Body>
               </Card>
